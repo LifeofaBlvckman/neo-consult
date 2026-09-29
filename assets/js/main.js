@@ -200,6 +200,17 @@
   (function () {
     var box = document.getElementById('chatbot');
     if (!box) return;
+    // pages inside blog/ load main.js as ../assets/js/main.js — use the same prefix for links and images the chat creates
+    var me = document.querySelector('script[src$="assets/js/main.js"]');
+    var BASE = me ? me.getAttribute('src').replace(/assets\/js\/main\.js$/, '') : '';
+    function rebase(el) {
+      if (!BASE) return el;
+      el.querySelectorAll('a[href], img[src]').forEach(function (n) {
+        var attr = n.tagName === 'A' ? 'href' : 'src', v = n.getAttribute(attr);
+        if (v && !/^(https?:|mailto:|tel:|#|\/|data:|\.\.\/)/.test(v)) n.setAttribute(attr, BASE + v);
+      });
+      return el;
+    }
     var fab = document.getElementById('chat-fab');
     var closeBtn = document.getElementById('chat-close');
     var body = document.getElementById('chat-body');
@@ -250,7 +261,7 @@
     function addMsg(html, who) {
       var d = document.createElement('div');
       d.className = 'msg ' + who;
-      if (who === 'user') d.textContent = html; else d.innerHTML = html;
+      if (who === 'user') d.textContent = html; else { d.innerHTML = html; rebase(d); }
       body.appendChild(d); scroll();
     }
     function answer(q) {
@@ -277,7 +288,7 @@
       if (inList) out.push('</ul>');
       return out.join('')
         .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
-        .replace(/\[([^\]]+)\]\(((?:https:\/\/|(?:index|about|services|contact)\.html)[^)\s]*)\)/g, function (m, label, url) {
+        .replace(/\[([^\]]+)\]\(((?:https:\/\/|(?:index|about|services|contact|blog(?:\/[\w-]+)?)\.html)[^)\s]*)\)/g, function (m, label, url) {
           var ext = url.indexOf('https://') === 0;
           return '<a href="' + url + '"' + (ext ? ' target="_blank" rel="noopener"' : '') + '>' + label + '</a>';
         });
@@ -301,7 +312,7 @@
       var text = '', bubble = null;
       var paint = function () {
         if (!bubble) { typ.remove(); bubble = document.createElement('div'); bubble.className = 'msg bot streaming'; body.appendChild(bubble); }
-        bubble.innerHTML = formatReply(text); scroll();
+        bubble.innerHTML = formatReply(text); rebase(bubble); scroll();
       };
       var finish = function () {
         clearTimeout(timer);
@@ -405,6 +416,7 @@
     var teaser = document.createElement('button');
     teaser.type = 'button'; teaser.className = 'chat-teaser';
     teaser.innerHTML = "<img src='assets/img/nc-mark.png' alt=''><span><b>Ready to apply?</b><small>It's quick and easy</small></span><span class='x' aria-label='Dismiss'>&times;</span>";
+    rebase(teaser);
     box.appendChild(teaser);
     var teaserOff = false;
     try { teaserOff = sessionStorage.getItem('ncTeaserOff') === '1'; } catch (e) {}

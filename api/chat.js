@@ -48,6 +48,14 @@ United Kingdom (most popular), Ireland, Canada, Australia, United States, New Ze
 
 BOOKING
 Free consultation: contact.html. About the company: about.html. All services: services.html.
+
+STUDY-ABROAD GUIDES ON THE WEBSITE (link to one when it answers the question; all guides: blog.html)
+- How to study in the UK from Nigeria: a step-by-step guide (blog/study-in-the-uk-from-nigeria.html)
+- UK Student visa checklist for Nigerian applicants (blog/uk-student-visa-checklist-nigeria.html)
+- IELTS for Nigerian students: scores, test types and how to prepare (blog/ielts-guide-for-nigerian-students.html)
+- Scholarships for Nigerian students: where to look and how to apply (blog/scholarships-for-nigerian-students.html)
+- UK or Canada? Choosing where to study as a Nigerian student (blog/uk-or-canada-for-nigerian-students.html)
+- Your first week in the UK: an arrival checklist for new students (blog/first-week-in-the-uk-checklist.html)
 `;
 
 const PERSONAS = {

@@ -1,0 +1,9 @@
+{
+  "name": "neoconsult-site",
+  "private": true,
+  "description": "Neo Consult website — static pages plus a Claude-powered chat function (api/chat.js).",
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.129.0"
+  }
+}

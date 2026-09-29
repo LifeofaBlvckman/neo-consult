@@ -160,18 +160,39 @@
   if (tcar) {
     var slides = tcar.querySelectorAll('.tslide');
     var dots = tcar.querySelectorAll('.tdot');
-    var idx = 0, timer = null;
+    var idx = 0, timer = null, paused = reduceMotion;
+    var pauseBtn = tcar.querySelector('.tc-pause');
+    slides.forEach(function (s, i) { s.setAttribute('aria-roledescription', 'slide'); s.setAttribute('aria-label', (i + 1) + ' of ' + slides.length); });
     function goTo(n) {
       slides[idx].classList.remove('active'); if (dots[idx]) dots[idx].classList.remove('active');
       idx = (n + slides.length) % slides.length;
       slides[idx].classList.add('active'); if (dots[idx]) dots[idx].classList.add('active');
     }
-    function start() { if (reduceMotion || slides.length < 2) return; stop(); timer = setInterval(function () { goTo(idx + 1); }, 5500); }
-    function stop() { if (timer) { clearInterval(timer); timer = null; } }
+    function start() { if (paused || slides.length < 2) return; stop(); timer = setInterval(function () { goTo(idx + 1); }, 5500); tcar.classList.remove('is-paused'); }
+    function stop() { if (timer) { clearInterval(timer); timer = null; } tcar.classList.add('is-paused'); }
+    function setPaused(p) {
+      paused = p;
+      if (pauseBtn) { pauseBtn.setAttribute('aria-pressed', p ? 'true' : 'false'); pauseBtn.setAttribute('aria-label', p ? 'Play stories' : 'Pause stories'); }
+      p ? stop() : start();
+    }
     dots.forEach(function (d) { d.addEventListener('click', function () { goTo(parseInt(d.getAttribute('data-i'), 10)); start(); }); });
+    var prev = tcar.querySelector('.tc-prev'), next = tcar.querySelector('.tc-next');
+    if (prev) prev.addEventListener('click', function () { goTo(idx - 1); start(); });
+    if (next) next.addEventListener('click', function () { goTo(idx + 1); start(); });
+    if (pauseBtn) pauseBtn.addEventListener('click', function () { setPaused(!paused); });
     tcar.addEventListener('mouseenter', stop);
     tcar.addEventListener('mouseleave', start);
-    start();
+    tcar.addEventListener('focusin', stop);
+    tcar.addEventListener('focusout', function (e) { if (!tcar.contains(e.relatedTarget)) start(); });
+    // swipe on phones
+    var x0 = null;
+    tcar.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+    tcar.addEventListener('touchend', function (e) {
+      if (x0 === null) return;
+      var dx = e.changedTouches[0].clientX - x0; x0 = null;
+      if (Math.abs(dx) > 40) { goTo(idx + (dx < 0 ? 1 : -1)); start(); }
+    }, { passive: true });
+    setPaused(paused);
   }
 
 
@@ -273,21 +294,52 @@
         if (history.length > 20) history = history.slice(-20);
       };
       var fallback = function () { var a = answer(q); setTimeout(function () { done(a, a.replace(/<[^>]+>/g, '')); }, reduceMotion ? 100 : 500); };
-      if (aiOff) return fallback();
+      if (aiOff || !window.TextDecoder) return fallback();
       var ctrl = window.AbortController ? new AbortController() : null;
-      var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 20000);
+      var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 45000);
+      // Claude's reply streams in as newline-delimited JSON: {"type":"delta","text":...} ... {"type":"done"}
+      var text = '', bubble = null;
+      var paint = function () {
+        if (!bubble) { typ.remove(); bubble = document.createElement('div'); bubble.className = 'msg bot streaming'; body.appendChild(bubble); }
+        bubble.innerHTML = formatReply(text); scroll();
+      };
+      var finish = function () {
+        clearTimeout(timer);
+        if (bubble) bubble.classList.remove('streaming');
+        history.push({ role: 'assistant', content: text });
+        if (history.length > 20) history = history.slice(-20);
+      };
       fetch('/api/chat', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ agent: agent, messages: history }), signal: ctrl ? ctrl.signal : undefined
       }).then(function (r) {
-        if (r.status === 503 || r.status === 404) aiOff = true;   // not configured / not deployed: stop trying
-        if (!r.ok) throw new Error('status ' + r.status);
-        return r.json();
-      }).then(function (d) {
-        clearTimeout(timer);
-        if (!d || !d.reply) throw new Error('empty');
-        done(formatReply(d.reply), d.reply);
-      }).catch(function () { clearTimeout(timer); fallback(); });
+        if (r.status === 503 || r.status === 404 || r.status === 405) aiOff = true;   // not configured / not deployed: stop trying
+        if (!r.ok || !r.body) throw new Error('status ' + r.status);
+        var reader = r.body.getReader(), dec = new TextDecoder(), buf = '';
+        return (function pump() {
+          return reader.read().then(function (res) {
+            if (res.done) return;
+            buf += dec.decode(res.value, { stream: true });
+            var lines = buf.split('\n'); buf = lines.pop();
+            lines.forEach(function (ln) {
+              if (!ln.trim()) return;
+              var ev; try { ev = JSON.parse(ln); } catch (e) { return; }
+              if (ev.type === 'delta') { text += ev.text; paint(); }
+              else if (ev.type === 'error') throw new Error(ev.error);
+            });
+            return pump();
+          });
+        })();
+      }).then(function () {
+        if (!text) throw new Error('empty');
+        finish();
+      }).catch(function () {
+        if (text) {   // the stream broke part-way: keep what arrived and point to a person
+          text += '\n\nThe connection dropped. For anything else, [book a free consultation](contact.html).';
+          paint(); finish(); return;
+        }
+        clearTimeout(timer); fallback();
+      });
     }
     function renderQuick() {
       quick.innerHTML = '';
@@ -470,7 +522,7 @@
   (function () {
     var hdr = document.querySelector('.site-header');
     var btt = document.querySelector('.back-to-top');
-    if (hdr && !hdr.querySelector('.scroll-prog')) { var bar = document.createElement('span'); bar.className = 'scroll-prog'; bar.setAttribute('aria-hidden', 'true'); hdr.appendChild(bar); }
+    if (hdr && !hdr.querySelector('.scroll-prog')) { var bar = document.createElement('span'); bar.className = 'scroll-prog'; bar.setAttribute('aria-hidden', 'true'); (hdr.querySelector('.header-inner') || hdr).appendChild(bar); }
     var ticking = false;
     function upd() {
       var h = document.documentElement.scrollHeight - innerHeight;

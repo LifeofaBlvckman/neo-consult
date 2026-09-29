@@ -1,19 +1,35 @@
-// Neo Consult website assistant — Vercel serverless function.
+// Neo Consult website assistant — Vercel serverless function, powered by Claude.
 // The Anthropic API key lives ONLY here, read from the ANTHROPIC_API_KEY environment variable
 // (Vercel → Project → Settings → Environment Variables). It is never sent to the browser.
+//
+// The reply is streamed back to the browser as newline-delimited JSON:
+//   {"type":"delta","text":"..."}   a piece of the answer, in order
+//   {"type":"done"}                 the answer is complete
+//   {"type":"error","error":"..."}  something went wrong after streaming started
 
-const MODEL = process.env.CLAUDE_MODEL || 'claude-haiku-4-5-20251001';
+const { Anthropic } = require('@anthropic-ai/sdk');
+
+const MODEL = process.env.CLAUDE_MODEL || 'claude-opus-5-5';
+// Models that accept the server-side refusal fallback used below.
+const FALLBACK_MODELS = ['claude-opus-5-5', 'claude-opus-5', 'claude-fable-5-1', 'claude-sonnet-5-5'];
+const NO_EFFORT_MODELS = /^claude-haiku-/;
 const MAX_HISTORY = 12;          // messages kept per request
 const MAX_CHARS = 1200;          // per message
 const RATE_LIMIT = 20;           // requests per IP ...
 const RATE_WINDOW_MS = 10 * 60 * 1000; // ... per 10 minutes (per warm instance)
 const hits = new Map();
 
+let client = null;
+function getClient() {
+  if (!client) client = new Anthropic();   // reads ANTHROPIC_API_KEY
+  return client;
+}
+
 const FACTS = `
 ABOUT NEO CONSULT
 - Study-abroad and education consultancy with two offices:
-  - Abuja office: 2 Eden Close, Redeemer Estate, Abuja, Nigeria
-  - Leeds office: Park House, 24 Park Square W, Leeds, LS1 2PW, United Kingdom
+  - Abuja office: 2 Eden Close, Redeemer Estate, Abuja, Nigeria (Mon–Fri, 9:00am–5:00pm WAT)
+  - Leeds office: Park House, 24 Park Square W, Leeds, LS1 2PW, United Kingdom (Mon–Fri, 9:00am–5:00pm GMT)
 - Email: theneoconsult@gmail.com · Phone: +234 816 010 0708
 - The first consultation is free. Students are guided from choosing a course to settling in abroad; the Leeds team supports students after arrival in the UK.
 - Figures shown on the website: 500+ students guided, 50+ partner universities, 95% visa success rate.
@@ -41,14 +57,15 @@ const PERSONAS = {
 
 function systemPrompt(agent) {
   return `${PERSONAS[agent] || PERSONAS.ada}
-You are a virtual assistant (an AI) on the Neo Consult website, talking with prospective students and parents, mostly from Nigeria. Never claim to be human.
+You are a virtual assistant (an AI) on the Neo Consult website, talking with prospective students and parents, mostly from Nigeria and usually on a phone. Never claim to be human.
 
 ${FACTS}
 
 HOW TO REPLY
+- Latency-sensitive; begin your visible answer immediately.
 - Be warm, clear and brief: usually 2–5 short sentences, under 120 words. Use a short bulleted list ("- ") only when listing options.
 - You may use **bold** sparingly and link to the website pages above with markdown links, e.g. [book a free consultation](contact.html). Only link to the pages listed above.
-- Only state facts about Neo Consult that are listed above. If you don't know (fees, specific partner universities, office hours, staff names), say a counsellor can confirm and point to [a free consultation](contact.html).
+- Only state facts about Neo Consult that are listed above. If you don't know (fees, specific partner universities, staff names), say a counsellor can confirm and point to [a free consultation](contact.html).
 - Visa rules, tuition, funds requirements and work rights change often and depend on the country and the student's situation. Give general guidance only, never guarantee a visa or admission outcome, and recommend checking the official government website or speaking with a counsellor for specifics.
 - Stay on study-abroad topics. Politely decline unrelated requests and steer back.
 - When a student seems ready or asks something personal to their case, invite them to book the free consultation.`;
@@ -86,6 +103,19 @@ function cleanMessages(raw) {
   return out;
 }
 
+function buildParams(agent, messages) {
+  const params = { model: MODEL, max_tokens: 2048, system: systemPrompt(agent), messages };
+  if (!NO_EFFORT_MODELS.test(MODEL)) params.output_config = { effort: 'low' };   // quick chat replies
+  if (FALLBACK_MODELS.includes(MODEL)) {
+    // If a safety classifier declines, the API re-runs the request on a recommended fallback model.
+    params.betas = ['server-side-fallback-2026-07-01'];
+    params.fallbacks = 'default';
+  }
+  return params;
+}
+
+const REFUSAL_TEXT = "I can't help with that one here, but a counsellor can. [Book a free consultation](contact.html).";
+
 module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   const allowed = process.env.ALLOWED_ORIGIN;              // optional, e.g. https://neoconsult.vercel.app
@@ -105,28 +135,39 @@ module.exports = async function handler(req, res) {
   if (!messages) return res.status(400).json({ error: 'bad_request' });
   const agent = body.agent === 'tobi' ? 'tobi' : 'ada';
 
-  try {
-    const r = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({ model: MODEL, max_tokens: 400, system: systemPrompt(agent), messages })
-    });
-    if (!r.ok) {
-      console.error('Anthropic API error', r.status, (await r.text()).slice(0, 300));
-      return res.status(502).json({ error: 'upstream_error' });
+  let started = false;
+  const send = (obj) => {
+    if (!started) {
+      started = true;
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/x-ndjson; charset=utf-8');
+      res.setHeader('X-Accel-Buffering', 'no');
     }
-    const data = await r.json();
-    const reply = (data.content || []).filter(c => c.type === 'text').map(c => c.text).join('\n').trim();
-    if (!reply) return res.status(502).json({ error: 'empty_reply' });
-    return res.status(200).json({ reply });
+    res.write(JSON.stringify(obj) + '\n');
+  };
+
+  const stream = getClient().beta.messages.stream(buildParams(agent, messages));
+  res.on('close', () => { if (!res.writableEnded) stream.abort(); });   // visitor closed the chat
+
+  try {
+    for await (const event of stream) {
+      if (event.type === 'content_block_delta' && event.delta.type === 'text_delta' && event.delta.text) {
+        send({ type: 'delta', text: event.delta.text });
+      }
+    }
+    const final = await stream.finalMessage();
+    if (final.stop_reason === 'refusal') send({ type: 'delta', text: (started ? '\n\n' : '') + REFUSAL_TEXT });
+    if (!started) return res.status(502).json({ error: 'empty_reply' });
+    send({ type: 'done' });
+    return res.end();
   } catch (err) {
-    console.error('Chat function failed', err && err.message);
-    return res.status(500).json({ error: 'server_error' });
+    if (err instanceof Anthropic.APIUserAbortError) return res.end();
+    const status = err instanceof Anthropic.APIError ? err.status : undefined;
+    console.error('Chat function failed', status, err && err.message);
+    if (!started) return res.status(status === 429 ? 429 : 502).json({ error: 'upstream_error' });
+    send({ type: 'error', error: 'upstream_error' });
+    return res.end();
   }
 };
 
-module.exports._test = { cleanMessages, systemPrompt };
+module.exports._test = { cleanMessages, systemPrompt, buildParams };

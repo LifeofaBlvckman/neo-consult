@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="assets/css/style.css">
 <noscript><style>[data-reveal],.hero [data-load]{opacity:1!important;transform:none!important}.overlay-nav{display:none}</style></noscript>
 </head>
-<body>
+<body class="page-home">
 <a class="skip-link" href="#main">Skip to content</a>
 
 <!-- SOCIAL RAIL -->
@@ -66,40 +66,35 @@
 
 <main id="main">
 
-  <!-- HERO (vibrant, with office video) -->
-  <section class="sn-hero hero" id="home">
-    <span class="sn-bubble b1" aria-hidden="true"></span>
-    <span class="sn-bubble b2" aria-hidden="true"></span>
-    <span class="sn-bubble b3" aria-hidden="true"></span>
-    <div class="container sn-hero-grid">
-      <div class="sn-hero-copy">
-        <p class="sn-kicker" data-load style="--load-delay:250ms"><span class="sn-kicker-dot" aria-hidden="true"></span>Study abroad from Nigeria<span class="kick-more"> &middot; Abuja &amp; Leeds</span></p>
-        <h1 data-load style="--load-delay:400ms">Your study&#8209;abroad journey, <span class="sn-blob">made simple.</span></h1>
-        <p class="sn-lead" data-load style="--load-delay:600ms">Real counsellors in Abuja and Leeds who guide you from choosing a course to landing on campus &mdash; with your first consultation completely free.</p>
-        <form class="sn-search" id="sn-search" role="search" data-load style="--load-delay:760ms">
+  <!-- HERO: office video as the background, words merged over it -->
+  <section class="sn-hero hero hv" id="home">
+    <div class="container hv-panel">
+      <div class="hv-media" aria-hidden="true">
+        <video autoplay muted loop playsinline preload="auto" poster="assets/img/hero-poster.jpg">
+          <source src="assets/video/hero.mp4" type="video/mp4">
+        </video>
+      </div>
+      <span class="hv-rule" aria-hidden="true"><i></i></span>
+      <div class="glass-chip gc-top" aria-hidden="true"><span class="gc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4L19 7"/></svg></span><span><b>Free first consultation</b><small>No obligation, in person or online</small></span></div>
+      <div class="glass-chip gc-bottom" aria-hidden="true"><b class="gc-num">95%</b><span><b>Visa success</b><small>500+ students guided</small></span></div>
+
+      <div class="sn-hero-copy hv-copy">
+        <form class="sn-search" id="sn-search" role="search" data-load style="--load-delay:250ms">
           <input type="search" id="sn-search-q" placeholder="Ask about a course or country…" aria-label="Ask our AI assistant about a course or country">
           <button type="submit" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg></button>
         </form>
-        <div class="sn-chips" data-load style="--load-delay:880ms">
+        <div class="sn-chips" data-load style="--load-delay:380ms">
           <span>Popular:</span>
           <button type="button" data-ask="Master's degrees in the UK">UK Master's</button>
           <button type="button" data-ask="Nursing courses abroad">Nursing</button>
           <button type="button" data-ask="Studying in Canada">Canada</button>
           <button type="button" data-ask="Scholarships">Scholarships</button>
         </div>
-        <div class="sn-actions" data-load style="--load-delay:1000ms">
+        <h1 data-load style="--load-delay:500ms">Your study&#8209;abroad journey, <span class="sn-blob">made simple.</span></h1>
+        <p class="sn-lead" data-load style="--load-delay:680ms">Real counsellors in Abuja and Leeds guide you from choosing a course to landing on campus. 500+ students guided &middot; 50+ partner universities &middot; 95% visa success rate. Your first consultation is completely free.</p>
+        <div class="sn-actions" data-load style="--load-delay:840ms">
           <a href="contact.html" class="btn btn-navy btn-lg btn-uc">Apply now</a>
           <button type="button" class="btn btn-outline-navy btn-lg" data-open-chat>Ask a question</button>
-        </div>
-      </div>
-      <div class="sn-hero-media" data-load style="--load-delay:300ms">
-        <span class="sn-dot-gold" aria-hidden="true"></span>
-        <div class="glass-chip gc-top" aria-hidden="true"><span class="gc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4L19 7"/></svg></span><span><b>Free first consultation</b><small>No obligation, in person or online</small></span></div>
-        <div class="glass-chip gc-bottom" aria-hidden="true"><b class="gc-num">95%</b><span><b>Visa success</b><small>500+ students guided</small></span></div>
-        <div class="sn-video">
-          <video autoplay muted loop playsinline preload="auto" poster="assets/img/hero-poster.jpg" aria-label="Inside the Neo Consult office">
-            <source src="assets/video/hero.mp4" type="video/mp4">
-          </video>
         </div>
       </div>
     </div>

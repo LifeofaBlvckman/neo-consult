@@ -1786,3 +1786,79 @@ button{cursor:pointer}
 }
 .glass-chip .gc-num{display:grid}
 @media (max-width:520px){.kick-more{display:none}}
+
+/* =========================================================
+   VIDEO HERO (homepage) — the office video is the background,
+   the words sit over it and the picture fades into them
+   ========================================================= */
+.hv{background:#fff;padding-bottom:clamp(46px,6vw,80px)}
+.hv-panel{position:relative;isolation:isolate;overflow:hidden;display:flex;align-items:center;
+  width:min(1320px,calc(100% - 48px));min-height:min(660px,80vh);padding:clamp(36px,5vw,72px) clamp(28px,5vw,72px);
+  border-radius:30px;background:linear-gradient(100deg,#ffffff 0%,#f4f5fb 48%,#eceefa 100%);
+  box-shadow:0 30px 80px rgba(29,29,94,.12),inset 0 0 0 1px rgba(29,29,94,.05)}
+.hv-media{position:absolute;z-index:-1;top:0;right:0;bottom:0;width:46%;overflow:hidden}
+.hv-media video{width:100%;height:100%;object-fit:cover;object-position:50% 35%;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.55) 18%,#000 42%);
+          mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.55) 18%,#000 42%)}
+.hv-media::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(29,29,94,0) 60%,rgba(29,29,94,.22))}
+.hv-rule{position:absolute;z-index:1;left:57%;top:7%;bottom:14%;width:3px;border-radius:3px;
+  background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,255,255,.95) 12%,rgba(255,255,255,.95) 88%,rgba(255,255,255,0))}
+.hv-rule i{position:absolute;left:50%;bottom:-26px;width:22px;height:22px;margin-left:-11px;border-radius:50%;border:3px solid var(--royal);background:rgba(255,255,255,.6)}
+.hv-copy{position:relative;z-index:2;max-width:560px}
+.hv .sn-search{max-width:520px;background:rgba(255,255,255,.88);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.hv .sn-chips{margin:14px 0 34px}
+.hv h1{font-size:clamp(2.4rem,4.6vw,3.9rem);line-height:1.05;max-width:13ch}
+.hv .sn-lead{max-width:34em;color:#3f4058;margin:22px 0 30px}
+.hv .glass-chip{animation:floatY 6s ease-in-out infinite}
+.hv .gc-top{top:40px;left:auto;right:calc(46% - 120px)}
+.hv .gc-bottom{bottom:64px;right:28px}
+.hv .ocean-hero{height:clamp(70px,8vw,120px)}
+@media (max-width:1100px) and (min-width:761px){
+  .hv-media{width:52%}
+  .hv-rule{left:47%}
+  .hv .gc-top{display:none}
+}
+
+/* ---- Phones: layout like the reference — rail on the left, video behind the words ---- */
+@media (max-width:760px){
+  body.page-home .social-rail{display:flex;position:absolute;left:12px;top:132px;transform:none;gap:22px;z-index:6}
+  body.page-home .social-rail a{width:21px;height:21px}
+  .hv{padding-bottom:34px}
+  .hv-panel{width:auto;margin-left:50px;margin-right:0;min-height:calc(100svh - 150px);align-items:flex-start;
+    padding:22px 26px 96px 18px;border-radius:24px 0 0 24px}
+  .hv-media{width:100%}
+  .hv-media video{-webkit-mask-image:none;mask-image:none;object-position:62% 30%}
+  .hv-media::after{background:
+    linear-gradient(90deg,rgba(244,245,251,.96) 0%,rgba(244,245,251,.88) 58%,rgba(244,245,251,.45) 100%),
+    linear-gradient(180deg,rgba(244,245,251,.3) 0%,rgba(244,245,251,0) 70%)}
+  .hv-rule{left:auto;right:12px;top:0;bottom:22%;background:linear-gradient(180deg,rgba(255,255,255,.95) 80%,rgba(255,255,255,0))}
+  .hv-rule i{width:20px;height:20px;margin-left:-10px;bottom:-24px}
+  .hv .glass-chip,.hv .sn-chips,.hv .sn-actions .btn-outline-navy{display:none}
+  .hv .sn-search{margin-bottom:30px}
+  .hv h1{font-size:clamp(2.05rem,9.6vw,2.6rem);max-width:none}
+  .hv .sn-lead{font-size:1rem;line-height:1.75;margin:20px 0 28px}
+  .hv .sn-actions .btn{flex:0 0 auto;padding:1em 2em}
+
+  /* floating chat button + "Ready to apply?" pill instead of the bottom bar */
+  body{padding-bottom:0}
+  .m-bar{display:none!important}
+  .chatbot{left:auto;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));pointer-events:auto}
+  .chat-fab{display:grid!important;width:62px;height:62px}
+  .chat-teaser{display:flex!important;right:72px;bottom:4px}
+  .chatbot.open .chat-fab{visibility:hidden}
+}
+
+/* ---- Inner pages on phones: the header photo sits behind the title and fades up into it ---- */
+@media (max-width:760px){
+  .pg-hero{padding-bottom:0;overflow:hidden}
+  .pg-hero-inner{display:block;position:relative;min-height:clamp(430px,118vw,540px)}
+  .pg-hero-copy{position:relative;z-index:2;margin-top:12px}
+  .pg-hero-copy h1{font-size:2.35rem}
+  .pg-hero-img{position:absolute;z-index:1;top:70px;bottom:0;left:calc(-1 * (100vw - 100%) / 2);right:calc(-1 * (100vw - 100%) / 2);
+    height:auto;margin:0;border-radius:0}
+  .pg-hero-img img{border-radius:0;
+    -webkit-mask-image:linear-gradient(180deg,transparent 0%,rgba(0,0,0,.35) 22%,#000 55%);
+            mask-image:linear-gradient(180deg,transparent 0%,rgba(0,0,0,.35) 22%,#000 55%)}
+  .pg-hero + .ocean-line{margin-top:-46px;position:relative;z-index:3}
+}

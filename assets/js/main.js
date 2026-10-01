@@ -141,16 +141,33 @@
       var btn = form.querySelector('[type="submit"]');
       var keyEl = form.querySelector('input[name="access_key"]');
       var key = keyEl ? keyEl.value.trim() : '';
-      var showOk = function () {
-        if (success) { success.classList.add('show'); success.setAttribute('role', 'status');
-          success.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' }); }
-        form.reset();
+      var show = function (msg) {
+        if (success) {
+          var t = success.querySelector('span'); if (t) t.textContent = msg;
+          success.classList.add('show'); success.setAttribute('role', 'status');
+          success.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
+        }
         if (btn) { btn.disabled = false; btn.textContent = 'Send Message'; }
       };
-      if (!key || key.indexOf('YOUR_') === 0) { showOk(); return; }
+      // Without a working form service, never pretend the message was sent: open the visitor's email app instead
+      var viaEmail = function () {
+        var f = new FormData(form), lines = [];
+        [['full-name', 'Name'], ['email', 'Email'], ['phone', 'Phone'], ['office', 'Preferred office'], ['interest', 'Interested in']].forEach(function (p) {
+          var v = (f.get(p[0]) || '').toString().trim(); if (v) lines.push(p[1] + ': ' + v);
+        });
+        lines.push('', (f.get('message') || '').toString());
+        location.href = 'mailto:theneoconsult@gmail.com?subject=' + encodeURIComponent('Enquiry from the Neo Consult website') + '&body=' + encodeURIComponent(lines.join('\n'));
+        show('Your email app has opened with your message. Press send there and a counsellor will reply within one business day.');
+      };
+      if (!key || key.indexOf('YOUR_') === 0) { viaEmail(); return; }
       if (btn) { btn.disabled = true; btn.textContent = 'Sending\u2026'; }
       fetch('https://api.web3forms.com/submit', { method: 'POST', body: new FormData(form) })
-        .then(function (r) { return r.json(); }).then(showOk).catch(showOk);
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (!d || !d.success) throw new Error('not sent');
+          form.reset(); show('Thanks! Your message has been sent. A counsellor will be in touch within one business day.');
+        })
+        .catch(viaEmail);
     });
   }
 
@@ -577,6 +594,7 @@
     function paint() {
       cards.forEach(function (c, i) {
         var on = mq.matches;
+        if (on) c.classList.add('in');   // off-screen slides never hit the scroll observer
         c.classList.toggle('is-active', on && i === idx);
         c.classList.toggle('is-prev', on && i === (idx - 1 + cards.length) % cards.length);
         if (on) c.setAttribute('aria-hidden', i === idx ? 'false' : 'true'); else c.removeAttribute('aria-hidden');
@@ -642,6 +660,45 @@
       var io = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { draw(ft); io.disconnect(); } }, { threshold: 0.6 });
       io.observe(ft);
     }
+  })();
+
+  // ---- Titles: hero headline rises word by word; page titles cascade letter by letter ----
+  (function () {
+    if (reduceMotion) return;
+    function esc(t) { return t.replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
+    // words (keeps child elements such as the gold "made simple." highlight together as one unit)
+    function splitWords(el) {
+      var i = 0, html = '';
+      Array.prototype.forEach.call(el.childNodes, function (n) {
+        if (n.nodeType === 3) {
+          n.textContent.split(/(\s+)/).forEach(function (part) {
+            if (!part) return;
+            html += /^\s+$/.test(part) ? ' ' : '<span class="w" aria-hidden="true" style="--wi:' + (i++) + '">' + esc(part) + '</span>';
+          });
+        } else if (n.nodeType === 1) {
+          n.classList.add('w'); n.style.setProperty('--wi', i++); n.setAttribute('aria-hidden', 'true');
+          html += n.outerHTML;
+        }
+      });
+      el.setAttribute('aria-label', el.textContent.replace(/\s+/g, ' ').trim());
+      el.innerHTML = html; el.classList.add('sw');
+    }
+    function splitLetters(el) {
+      var text = el.textContent.trim(), k = 0;
+      el.setAttribute('aria-label', text);
+      el.innerHTML = text.split(/\s+/).map(function (word) {
+        return '<span class="wd" aria-hidden="true">' + Array.prototype.map.call(word, function (ch) {
+          return '<span class="ch" style="--ci:' + (k++) + '">' + esc(ch) + '</span>';
+        }).join('') + '</span>';
+      }).join(' ');
+      el.classList.add('sl');
+    }
+    var heroH = document.querySelector('.hv-cine h1');
+    if (heroH) { splitWords(heroH); setTimeout(function () { heroH.classList.add('words-in'); }, 380); }
+    document.querySelectorAll('.pg-hero-copy h1, .article-head h1').forEach(function (h) {
+      if (h.children.length) return;
+      splitLetters(h); setTimeout(function () { h.classList.add('letters-in'); }, 250);
+    });
   })();
 
   // Footer year

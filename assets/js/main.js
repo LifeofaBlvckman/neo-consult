@@ -629,7 +629,7 @@
   // ---- Logo: the "n" draws itself, then the "c" (on load, when the footer appears, and on hover) ----
   (function () {
     if (reduceMotion) return;
-    function draw(svg) { clearTimeout(svg._t); svg.classList.remove('nc-draw'); void svg.getBoundingClientRect(); svg.classList.add('nc-draw'); svg._t = setTimeout(function () { svg.classList.remove('nc-draw'); }, 1800); }
+    function draw(svg) { clearTimeout(svg._t); svg.classList.remove('nc-draw'); void svg.getBoundingClientRect(); svg.classList.add('nc-draw'); svg._t = setTimeout(function () { svg.classList.remove('nc-draw'); }, 2050); }
     document.querySelectorAll('.site-header .nc-logo').forEach(function (svg) { setTimeout(function () { draw(svg); }, 150); });
     var ov = document.querySelector('.overlay-nav .nc-logo'), mb = document.getElementById('menu-open');
     if (ov && mb) mb.addEventListener('click', function () { setTimeout(function () { draw(ov); }, 250); });

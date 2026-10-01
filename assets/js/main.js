@@ -420,7 +420,14 @@
     box.appendChild(teaser);
     var teaserOff = false;
     try { teaserOff = sessionStorage.getItem('ncTeaserOff') === '1'; } catch (e) {}
-    if (!teaserOff) setTimeout(function () { if (!box.classList.contains('open')) teaser.classList.add('show'); }, 2200);
+    if (!teaserOff) {
+      var showTeaser = function () { if (!box.classList.contains('open')) teaser.classList.add('show'); };
+      if (document.body.classList.contains('page-home')) {
+        // on the homepage, wait until the visitor has scrolled past the video so the pill doesn't cover the hero buttons
+        var onScroll = function () { if (window.scrollY > window.innerHeight * 0.6) { window.removeEventListener('scroll', onScroll); showTeaser(); } };
+        window.addEventListener('scroll', onScroll, { passive: true });
+      } else setTimeout(showTeaser, 2200);
+    }
     teaser.addEventListener('click', function (e) {
       teaser.classList.remove('show');
       try { sessionStorage.setItem('ncTeaserOff', '1'); } catch (err) {}
@@ -617,6 +624,24 @@
       es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('words-in'); io.unobserve(e.target); } });
     }, { threshold: 0.3 });
     heads.forEach(function (h) { io.observe(h); });
+  })();
+
+  // ---- Logo: the "n" draws itself, then the "c" (on load, when the footer appears, and on hover) ----
+  (function () {
+    if (reduceMotion) return;
+    function draw(svg) { svg.classList.remove('nc-draw'); void svg.getBoundingClientRect(); svg.classList.add('nc-draw'); }
+    document.querySelectorAll('.site-header .nc-logo').forEach(function (svg) { setTimeout(function () { draw(svg); }, 150); });
+    var ov = document.querySelector('.overlay-nav .nc-logo'), mb = document.getElementById('menu-open');
+    if (ov && mb) mb.addEventListener('click', function () { setTimeout(function () { draw(ov); }, 250); });
+    document.querySelectorAll('.brand, .ft-brand').forEach(function (b) {
+      var svg = b.querySelector('.nc-logo');
+      if (svg) b.addEventListener('mouseenter', function () { draw(svg); });
+    });
+    var ft = document.querySelector('.ft-brand .nc-logo');
+    if (ft && 'IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { draw(ft); io.disconnect(); } }, { threshold: 0.6 });
+      io.observe(ft);
+    }
   })();
 
   // Footer year

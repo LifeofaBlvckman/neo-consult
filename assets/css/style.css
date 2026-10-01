@@ -2158,3 +2158,24 @@ body{animation:pageIn .6s var(--ease) both}
   .hv-sharp video{width:100%;height:100%;object-fit:cover}
   .hv-sharp::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,13,40,0) 55%,rgba(13,13,40,.6) 100%)}
 }
+
+/* =========================================================
+   TEXT ANIMATIONS — hero words, title letters, marker sweep
+   ========================================================= */
+.hv-cine h1.sw{opacity:1!important;transform:none!important;animation:none!important}
+.hv-cine h1.sw .w{transition-duration:.75s,.85s,.7s;transition-delay:calc(var(--wi,0) * 90ms)}
+.sl .wd{display:inline-block;white-space:nowrap}
+.sl .ch{display:inline-block;opacity:0;transform:translateY(.45em) rotate(6deg);filter:blur(4px);
+  transition:opacity .45s var(--ease),transform .6s var(--ease),filter .45s var(--ease);transition-delay:calc(var(--ci,0) * 32ms)}
+.sl.letters-in .ch{opacity:1;transform:none;filter:none}
+.pg-hero-copy[data-stagger] > h1.sl,.article-head > h1.sl{opacity:1!important;transform:none!important}
+/* gold highlight behind "made simple." sweeps in like a marker pen */
+.hero.loaded .hv-cine .sn-blob::before,.hv-cine.loaded .sn-blob::before{animation:markerSweep .7s cubic-bezier(.65,0,.35,1) 1.05s both,snBlob 7s ease-in-out 1.9s infinite}
+@keyframes markerSweep{from{clip-path:inset(0 100% 0 0 round 40px);transform:rotate(-2deg)}to{clip-path:inset(0 0 0 0 round 40px);transform:rotate(-2deg)}}
+/* footer column headings get a growing gold underline */
+.ft-col h3::after{content:"";display:block;width:0;height:3px;margin-top:9px;border-radius:3px;background:var(--gold);transition:width .8s var(--ease) .35s}
+.ft-grid.in .ft-col h3::after{width:34px}
+@media (prefers-reduced-motion:reduce){.sl .ch{opacity:1;transform:none;filter:none}}
+
+/* never let a moving decoration widen the page on phones */
+html,body{overflow-x:clip}

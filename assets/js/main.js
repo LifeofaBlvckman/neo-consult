@@ -164,7 +164,7 @@
           var v = (f.get(p[0]) || '').toString().trim(); if (v) lines.push(p[1] + ': ' + v);
         });
         lines.push('', (f.get('message') || '').toString());
-        location.href = 'mailto:theneoconsult@gmail.com?subject=' + encodeURIComponent('Enquiry from the Neo Consult website') + '&body=' + encodeURIComponent(lines.join('\n'));
+        location.href = 'mailto:info@theneoconsult.com?subject=' + encodeURIComponent('Enquiry from the Neo Consult website') + '&body=' + encodeURIComponent(lines.join('\n'));
         show('Your email app has opened with your message. Press send there and a counsellor will reply within one business day.');
       };
       if (!key || key.indexOf('YOUR_') === 0) { viaEmail(); return; }
@@ -257,12 +257,12 @@
       { k: ['scholarship','funding','grant','sponsor'], a: "We help you find and apply for scholarships and funding that match your profile. <a href='services.html#scholarships'>Scholarship guidance</a>." },
       { k: ['ielts','toefl','sat','test','exam','english'], a: "We offer IELTS, TOEFL and SAT prep with mock tests and one-on-one feedback. <a href='services.html#test-prep'>Test preparation</a>." },
       { k: ['accommodation','housing','hostel','where to live','apartment'], a: "We help you find safe, affordable accommodation so you settle in smoothly once you arrive." },
-      { k: ['contact','office','address','phone','call','email','reach','located'], a: "Reach us at theneoconsult@gmail.com. Offices: 2 Eden Close, Redeemer Estate, Abuja; and Park House, 24 Park Square W, Leeds. <a href='contact.html'>Contact us</a>." },
+      { k: ['contact','office','address','phone','call','email','reach','located'], a: "Reach us at info@theneoconsult.com. Offices: 2 Eden Close, Redeemer Estate, Abuja; and Park House, 24 Park Square W, Leeds. <a href='contact.html'>Contact us</a>." },
       { k: ['apply','book','consultation','get started','appointment','sign up','register'], a: "Great \u2014 let's get started. Book a free, no-obligation consultation here: <a href='contact.html'>Book a consultation</a>." },
       { k: ['thank','thanks','cheers'], a: "You're welcome! Anything else I can help with?" },
       { k: ['who are you','what are you','your name'], a: "I'm the Neo Consult assistant \u2014 here to answer quick questions about studying abroad. For detailed advice, a human counsellor is one click away. <a href='contact.html'>Book a chat</a>." }
     ];
-    var FALLBACK = "I'm not certain about that one, but a counsellor can help. Book a free consultation or email theneoconsult@gmail.com. <a href='contact.html'>Book now</a>.";
+    var FALLBACK = "I'm not certain about that one, but a counsellor can help. Book a free consultation or email info@theneoconsult.com. <a href='contact.html'>Book now</a>.";
     var AGENTS = {
       ada: { name: 'Ada', role: 'Admissions Guide', cls: 'av-ada',
         desc: 'Finds courses and countries that fit you, explains entry requirements and costs, and gets your application moving.',

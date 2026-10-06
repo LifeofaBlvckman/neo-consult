@@ -2399,3 +2399,8 @@ html,body{overflow-x:clip}
   .fc-offices{margin-top:90px}
 }
 @media (prefers-reduced-motion:reduce){.fc-card,.fc-dots i,.fc-dialog[open]{animation:none}.fc-squiggle path{transition:none;stroke-dashoffset:0}}
+
+/* ---- Header: the sticky box keeps one height so shrinking the glass bar never moves the page
+   (a height change at the 12px threshold made the page jump and the header flicker) ---- */
+.site-header{height:86px;overflow-anchor:none}
+@media (max-width:760px){.site-header{height:74px}}

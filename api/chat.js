@@ -56,6 +56,7 @@ STUDY-ABROAD GUIDES ON THE WEBSITE (link to one when it answers the question; al
 - Scholarships for Nigerian students: where to look and how to apply (blog/scholarships-for-nigerian-students.html)
 - UK or Canada? Choosing where to study as a Nigerian student (blog/uk-or-canada-for-nigerian-students.html)
 - Your first week in the UK: an arrival checklist for new students (blog/first-week-in-the-uk-checklist.html)
+- Find Course: search example UK and Canada courses by level, city, university and tuition, then apply through a counsellor (find-course.html). Fees there are approximate; a counsellor confirms current figures.
 `;
 
 const PERSONAS = {

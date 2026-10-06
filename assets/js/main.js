@@ -313,7 +313,7 @@
       if (inList) out.push('</ul>');
       return out.join('')
         .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
-        .replace(/\[([^\]]+)\]\(((?:https:\/\/|(?:index|about|services|contact|blog(?:\/[\w-]+)?)\.html)[^)\s]*)\)/g, function (m, label, url) {
+        .replace(/\[([^\]]+)\]\(((?:https:\/\/|(?:index|about|services|contact|find-course|blog(?:\/[\w-]+)?)\.html)[^)\s]*)\)/g, function (m, label, url) {
           var ext = url.indexOf('https://') === 0;
           return '<a href="' + url + '"' + (ext ? ' target="_blank" rel="noopener"' : '') + '>' + label + '</a>';
         });

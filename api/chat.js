@@ -30,7 +30,7 @@ ABOUT NEO CONSULT
 - Study-abroad and education consultancy with two offices:
   - Abuja office: 2 Eden Close, Redeemer Estate, Abuja, Nigeria (Mon–Fri, 9:00am–5:00pm WAT)
   - Leeds office: Park House, 24 Park Square W, Leeds, LS1 2PW, United Kingdom (Mon–Fri, 9:00am–5:00pm GMT)
-- Email: theneoconsult@gmail.com · Phone: +234 816 010 0708
+- Email: info@theneoconsult.com · Phone: +234 816 010 0708
 - The first consultation is free. Students are guided from choosing a course to settling in abroad; the Leeds team supports students after arrival in the UK.
 - Figures shown on the website: 500+ students guided, 50+ partner universities, 95% visa success rate.
 

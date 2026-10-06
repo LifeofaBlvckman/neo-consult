@@ -134,6 +134,14 @@
 
   // Contact form -> Web3Forms (shows a confirmation; falls back to demo until access key is added)
   var form = document.querySelector('#contact-form');
+  // arriving from Find Course: start the message with the chosen course
+  (function () {
+    var m = /[?&]course=([^&]+)/.exec(location.search), msg = document.getElementById('message');
+    if (!m || !msg || msg.value) return;
+    var course = decodeURIComponent(m[1].replace(/\+/g, ' ')).slice(0, 160);
+    msg.value = 'I would like to apply for ' + course + '. ';
+    var sel = document.getElementById('interest'); if (sel) sel.value = 'admissions';
+  })();
   if (form) {
     form.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -452,7 +460,7 @@
       openChat();
     });
 
-    document.querySelectorAll('[data-open-chat]').forEach(function (b) { b.addEventListener('click', function () { openChat(); }); });
+    document.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('[data-open-chat]')) openChat(); });
     document.querySelectorAll('[data-ask]').forEach(function (b) {
       b.addEventListener('click', function () { ask(b.getAttribute('data-ask')); });
     });

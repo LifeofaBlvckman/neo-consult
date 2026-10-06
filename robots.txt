@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://neoconsult.vercel.app/sitemap.xml
+Sitemap: https://theneoconsult.com/sitemap.xml

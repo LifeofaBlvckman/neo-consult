@@ -127,7 +127,7 @@ const REFUSAL_TEXT = "I can't help with that one here, but a counsellor can. [Bo
 
 module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
-  const allowed = process.env.ALLOWED_ORIGIN;              // optional, e.g. https://neoconsult.vercel.app
+  const allowed = process.env.ALLOWED_ORIGIN;              // optional, e.g. https://theneoconsult.com
   if (allowed && req.headers.origin && req.headers.origin !== allowed) {
     return res.status(403).json({ error: 'forbidden' });
   }

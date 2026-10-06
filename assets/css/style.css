@@ -2404,3 +2404,11 @@ html,body{overflow-x:clip}
    (a height change at the 12px threshold made the page jump and the header flicker) ---- */
 .site-header{height:86px;overflow-anchor:none}
 @media (max-width:760px){.site-header{height:74px}}
+
+/* ---- Testimonials: icon badges instead of photos ---- */
+.ts-ic{flex:none;display:grid;place-items:center;width:84px;height:84px;border-radius:50%;color:var(--navy);
+  background:radial-gradient(circle at 30% 25%,#fff6d8,#f6c344 70%);box-shadow:-6px 5px 0 var(--royal),0 10px 24px rgba(246,195,68,.35);
+  transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
+.ts-ic svg{width:40px;height:40px}
+.tslide:hover .ts-ic{transform:rotate(-8deg) scale(1.06)}
+@media (max-width:760px){.ts-ic{width:64px;height:64px}.ts-ic svg{width:30px;height:30px}}

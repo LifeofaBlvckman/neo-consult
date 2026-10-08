@@ -160,7 +160,7 @@
       // Without a working form service, never pretend the message was sent: open the visitor's email app instead
       var viaEmail = function () {
         var f = new FormData(form), lines = [];
-        [['full-name', 'Name'], ['email', 'Email'], ['phone', 'Phone'], ['office', 'Preferred office'], ['interest', 'Interested in']].forEach(function (p) {
+        [['name', 'Name'], ['email', 'Email'], ['phone', 'Phone'], ['office', 'Preferred office'], ['interest', 'Interested in']].forEach(function (p) {
           var v = (f.get(p[0]) || '').toString().trim(); if (v) lines.push(p[1] + ': ' + v);
         });
         lines.push('', (f.get('message') || '').toString());

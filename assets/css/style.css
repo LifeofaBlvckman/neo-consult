@@ -2419,3 +2419,113 @@ html,body{overflow-x:clip}
 .ts-ic svg{width:40px;height:40px}
 .tslide:hover .ts-ic{transform:rotate(-8deg) scale(1.06)}
 @media (max-width:760px){.ts-ic{width:64px;height:64px}.ts-ic svg{width:30px;height:30px}}
+
+/* =========================================================
+   MOBILE MENU v3 — one gold screen that slides up from the bottom,
+   compact enough that nothing needs scrolling
+   ========================================================= */
+.overlay-nav{height:100vh;height:100dvh;clip-path:none;transform:translateY(100%);visibility:hidden;overflow-y:auto;overscroll-behavior:contain;
+  background:radial-gradient(520px 360px at 110% -8%,rgba(255,255,255,.55),transparent 62%),
+    radial-gradient(460px 340px at -20% 108%,rgba(224,165,42,.6),transparent 62%),var(--gold);
+  border-radius:0;transition:transform .6s cubic-bezier(.22,1,.36,1),border-radius .6s cubic-bezier(.22,1,.36,1),visibility 0s linear .6s}
+body.menu-open .overlay-nav{clip-path:none;transform:none;visibility:visible;transition:transform .6s cubic-bezier(.22,1,.36,1),visibility 0s}
+.overlay-nav .ov-sheet{flex:0 0 auto;background:none;padding-bottom:0}
+.overlay-nav .ov-top{padding:10px 0}
+.overlay-nav .ov-top .logo-mark{width:46px;height:46px}
+.overlay-nav .overlay-close{width:44px;height:44px}
+.overlay-nav .overlay-close svg{width:26px;height:26px}
+.overlay-nav .ov-links{gap:0;margin:clamp(0px,1vh,10px) 0 0}
+.overlay-nav .ov-links a{font-size:clamp(1.08rem,3vh,1.45rem);padding:clamp(4px,1vh,10px) 8px clamp(6px,1.2vh,11px)}
+.overlay-nav .ov-links a::after{height:4px;bottom:1px}
+body.menu-open .overlay-nav .ov-links a:nth-child(1){transition-delay:.16s}
+body.menu-open .overlay-nav .ov-links a:nth-child(2){transition-delay:.21s}
+body.menu-open .overlay-nav .ov-links a:nth-child(3){transition-delay:.26s}
+body.menu-open .overlay-nav .ov-links a:nth-child(4){transition-delay:.31s}
+body.menu-open .overlay-nav .ov-links a:nth-child(5){transition-delay:.36s}
+body.menu-open .overlay-nav .ov-links a:nth-child(6){transition-delay:.41s}
+.overlay-nav .ov-cta{gap:4px;margin:clamp(10px,2.2vh,22px) auto 0;transition-delay:.44s}
+.overlay-nav .ov-cta .btn{padding:clamp(11px,1.8vh,15px) 20px;font-size:.86rem}
+.overlay-nav .ov-chat{font-size:.9rem;padding:6px 10px}
+/* contact details: on the gold, two tidy columns */
+.ov-info{background:none;color:var(--navy);margin-top:clamp(12px,2.4vh,24px);padding:0 0 calc(14px + env(safe-area-inset-bottom));transition-delay:.5s}
+.ov-info .container{grid-template-columns:1fr 1fr;gap:clamp(10px,1.6vh,16px) 14px;padding-top:clamp(12px,2vh,18px);border-top:1.5px solid rgba(29,29,94,.16)}
+.ov-item{grid-template-columns:30px 1fr;gap:9px;color:var(--navy)}
+.ov-ic{width:30px;height:30px;border-radius:50%;background:var(--navy);color:var(--gold)}
+.ov-ic svg{width:15px;height:15px}
+.ov-item b{font-size:clamp(.72rem,1.75vh,.84rem);font-weight:600;line-height:1.3;color:var(--navy);overflow-wrap:anywhere}
+.ov-item small{margin-top:2px;font-size:.68rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(29,29,94,.62)}
+.ov-social-row{grid-column:1 / -1;padding-top:0;border-top:0;align-items:center}
+.ov-social-row > .ov-ic{display:none}
+.ov-social-row{grid-template-columns:1fr}
+.ov-social-row > div{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ov-social-row small{order:-1;margin:0}
+.overlay-nav .ov-social{gap:10px;margin:0}
+.overlay-nav .ov-social a{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--navy);color:var(--gold);transition:transform .25s var(--ease)}
+.overlay-nav .ov-social a svg{width:17px;height:17px}
+.overlay-nav .ov-social a:hover{transform:translateY(-3px)}
+/* items rise in one after another once the sheet is up */
+.ov-info .ov-item{opacity:0;transform:translateY(12px);transition:opacity .45s var(--ease),transform .45s var(--ease)}
+body.menu-open .ov-info .ov-item{opacity:1;transform:none}
+body.menu-open .ov-info .ov-item:nth-child(1){transition-delay:.48s}
+body.menu-open .ov-info .ov-item:nth-child(2){transition-delay:.53s}
+body.menu-open .ov-info .ov-item:nth-child(3){transition-delay:.58s}
+body.menu-open .ov-info .ov-item:nth-child(4){transition-delay:.63s}
+body.menu-open .ov-info .ov-item:nth-child(5){transition-delay:.68s}
+@media (max-height:600px){
+  .overlay-nav .ov-top{padding:6px 0}
+  .overlay-nav .ov-top .logo-mark{width:40px;height:40px}
+  .overlay-nav .ov-chat{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .overlay-nav,body.menu-open .overlay-nav{transition:visibility 0s}
+  .ov-info .ov-item{opacity:1;transform:none;transition:none}
+}
+/* v3 fit tweaks: tighter links; email on its own row; phone + social icons share the last row */
+.overlay-nav .ov-links a{line-height:1.15;padding:clamp(5px,1.05vh,10px) 8px}
+.ov-item b{overflow-wrap:normal}
+.ov-info .ov-item:nth-child(3){grid-column:1 / -1}
+.ov-social-row{grid-column:auto;align-self:center}
+.ov-social-row small{display:none}
+.ov-social-row > div{justify-content:flex-end}
+.overlay-nav .ov-social{gap:8px}
+.overlay-nav .ov-social a{width:34px;height:34px}
+@media (max-height:700px){
+  .overlay-nav .ov-cta{margin-top:10px}
+  .overlay-nav .ov-cta .btn{padding:11px 18px}
+  .overlay-nav .ov-chat{padding:4px 8px;font-size:.84rem}
+  .ov-info{margin-top:10px}
+  .ov-info .container{padding-top:10px;gap:9px 12px}
+  .ov-item small{font-size:.62rem}
+}
+@media (max-height:650px){ .overlay-nav .ov-chat{display:none} }
+.overlay-nav .ov-sheet{padding-bottom:10px}
+.ov-info{margin-top:auto}
+.ov-info .ov-item:nth-child(4) b{white-space:nowrap}
+.overlay-nav .ov-social{flex-wrap:nowrap}
+@media (max-width:380px){
+  .overlay-nav .ov-social{gap:6px}
+  .overlay-nav .ov-social a{width:30px;height:30px}
+  .overlay-nav .ov-social a svg{width:15px;height:15px}
+  .ov-info .container{gap:9px 10px}
+  .ov-item{grid-template-columns:28px 1fr;gap:8px}
+  .ov-ic{width:28px;height:28px}
+  .ov-info .ov-item:nth-child(4) b{font-size:.74rem}
+}
+@media (max-width:380px){
+  .ov-social-row{grid-column:1 / -1}
+  .ov-social-row > div{justify-content:center}
+  .overlay-nav .ov-social{gap:12px}
+  .overlay-nav .ov-social a{width:32px;height:32px}
+  .ov-info .ov-item:nth-child(4) b{font-size:inherit}
+}
+@media (max-height:700px){
+  .overlay-nav .ov-top{padding:6px 0}
+  .overlay-nav .ov-top .logo-mark{width:42px;height:42px}
+  .overlay-nav .ov-links a{padding:4px 8px 5px}
+}
+.ov-info .container{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+@media (max-width:380px){
+  .ov-info .ov-item:nth-child(4){grid-column:1 / -1}
+  .ov-info .ov-item:nth-child(4) b{font-size:clamp(.72rem,1.75vh,.84rem)}
+}
+.ov-info .ov-social-row{grid-template-columns:1fr}

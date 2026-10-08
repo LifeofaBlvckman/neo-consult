@@ -167,15 +167,15 @@
           </div>
           <!-- Front-end only: wire this form up to a real form handler / backend before going live -->
           <form id="contact-form" action="https://api.web3forms.com/submit" method="POST">
-              <!-- TODO: get a free key at web3forms.com using info@theneoconsult.com, then paste it below -->
-              <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_ACCESS_KEY">
+              <!-- Web3Forms access key (public; submissions go to info@theneoconsult.com) -->
+              <input type="hidden" name="access_key" value="ffe9df7d-f524-4f9a-9623-314628bd0789">
               <input type="hidden" name="subject" value="New enquiry — Neo Consult website">
               <input type="hidden" name="from_name" value="Neo Consult Website">
               <input type="checkbox" name="botcheck" style="display:none !important" tabindex="-1" autocomplete="off">
             <div class="form-grid">
               <div class="field">
                 <label for="full-name">Full name</label>
-                <input type="text" id="full-name" name="full-name" placeholder="Your full name" required>
+                <input type="text" id="full-name" name="name" placeholder="Your full name" required>
               </div>
               <div class="field">
                 <label for="email">Email address</label>

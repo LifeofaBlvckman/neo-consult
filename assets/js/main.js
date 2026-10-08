@@ -656,22 +656,15 @@
     heads.forEach(function (h) { io.observe(h); });
   })();
 
-  // ---- Logo: the "n" draws itself, then the "c" (on load, when the footer appears, and on hover) ----
+  // ---- Logo: the "r" paints itself, then the "c", then a gloss sweeps across. Only once, when the page opens. ----
   (function () {
     if (reduceMotion) return;
-    function draw(svg) { clearTimeout(svg._t); svg.classList.remove('nc-draw'); void svg.getBoundingClientRect(); svg.classList.add('nc-draw'); svg._t = setTimeout(function () { svg.classList.remove('nc-draw'); }, 2050); }
-    document.querySelectorAll('.site-header .nc-logo').forEach(function (svg) { setTimeout(function () { draw(svg); }, 150); });
-    var ov = document.querySelector('.overlay-nav .nc-logo'), mb = document.getElementById('menu-open');
-    if (ov && mb) mb.addEventListener('click', function () { setTimeout(function () { draw(ov); }, 250); });
-    document.querySelectorAll('.brand, .ft-brand').forEach(function (b) {
-      var svg = b.querySelector('.nc-logo');
-      if (svg) b.addEventListener('mouseenter', function () { draw(svg); });
+    document.querySelectorAll('.site-header .nc-logo').forEach(function (svg) {
+      setTimeout(function () {
+        svg.classList.add('nc-draw');
+        setTimeout(function () { svg.classList.remove('nc-draw'); }, 3150);
+      }, 150);
     });
-    var ft = document.querySelector('.ft-brand .nc-logo');
-    if (ft && 'IntersectionObserver' in window) {
-      var io = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { draw(ft); io.disconnect(); } }, { threshold: 0.6 });
-      io.observe(ft);
-    }
   })();
 
   // ---- Titles: hero headline rises word by word; page titles cascade letter by letter ----

@@ -2144,9 +2144,16 @@ body{animation:pageIn .6s var(--ease) both}
 .nc-logo .nc-anim{display:none}
 .nc-draw .nc-anim{display:inline}
 .nc-draw .nc-full{display:none}
-.nc-draw .nc-n,.nc-draw .nc-c{stroke-dasharray:1 1;stroke-dashoffset:1;animation:ncDraw .95s cubic-bezier(.65,0,.35,1) forwards}
-.nc-draw .nc-c{animation-duration:.9s;animation-delay:.95s}
+/* the r is painted along its stem and shoulder, then the c sweeps round; both have a soft, feathered leading edge */
+.nc-draw .nc-n,.nc-draw .nc-c{stroke-dasharray:1 1;stroke-dashoffset:1;animation:ncDraw 1s cubic-bezier(.5,0,.2,1) forwards}
+.nc-draw .nc-c{animation-duration:1.05s;animation-delay:.98s}
 @keyframes ncDraw{to{stroke-dashoffset:0}}
+/* then a gold-white gloss glides across the finished mark */
+.nc-gloss{display:none}
+.nc-draw .nc-gloss{display:inline}
+.nc-gloss-bar{transform:translateX(0);opacity:0}
+.nc-draw .nc-gloss-bar{animation:ncGloss .95s cubic-bezier(.4,0,.2,1) 2.05s forwards}
+@keyframes ncGloss{0%{transform:translateX(0);opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translateX(420px);opacity:0}}
 
 
 /* =========================================================

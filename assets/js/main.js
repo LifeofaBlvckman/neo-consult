@@ -158,24 +158,27 @@
         if (btn) { btn.disabled = false; btn.textContent = 'Send Message'; }
       };
       // Without a working form service, never pretend the message was sent: open the visitor's email app instead
-      var viaEmail = function () {
+      var viaEmail = function (reason) {
         var f = new FormData(form), lines = [];
         [['name', 'Name'], ['email', 'Email'], ['phone', 'Phone'], ['office', 'Preferred office'], ['interest', 'Interested in']].forEach(function (p) {
           var v = (f.get(p[0]) || '').toString().trim(); if (v) lines.push(p[1] + ': ' + v);
         });
         lines.push('', (f.get('message') || '').toString());
         location.href = 'mailto:info@theneoconsult.com?subject=' + encodeURIComponent('Enquiry from the Neo Consult website') + '&body=' + encodeURIComponent(lines.join('\n'));
-        show('Your email app has opened with your message. Press send there and a counsellor will reply within one business day.');
+        show((reason ? 'We couldn\u2019t send it automatically (' + reason + '), so your' : 'Your') + ' email app has opened with your message. Press send there and a counsellor will reply within one business day.');
       };
-      if (!key || key.indexOf('YOUR_') === 0) { viaEmail(); return; }
+      if (!key || key.indexOf('YOUR_') === 0) { viaEmail(''); return; }
       if (btn) { btn.disabled = true; btn.textContent = 'Sending\u2026'; }
       fetch('https://api.web3forms.com/submit', { method: 'POST', body: new FormData(form) })
-        .then(function (r) { return r.json(); })
+        .then(function (r) { return r.json().catch(function () { throw new Error('form service error ' + r.status); }); })
         .then(function (d) {
-          if (!d || !d.success) throw new Error('not sent');
+          if (!d || !d.success) throw new Error((d && d.message) || 'not sent');
           form.reset(); show('Thanks! Your message has been sent. A counsellor will be in touch within one business day.');
         })
-        .catch(viaEmail);
+        .catch(function (err) {
+          if (window.console) console.warn('Contact form: Web3Forms did not accept the message:', err && err.message);
+          viaEmail(err && err.message ? String(err.message).slice(0, 120) : 'connection problem');
+        });
     });
   }
 
